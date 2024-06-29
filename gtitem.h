@@ -1,3 +1,6 @@
+#ifndef GTITEM_H
+#define GTITEM_H
+
 #include <stdio.h>
 
 struct Item {
@@ -16,13 +19,13 @@ struct Item {
   char is_stripey_wallpaper;
   char collision_type;
   char block_health;
-  unsigned int reset_time;
+  unsigned int drop_chance;
   char clothing_type;
   unsigned short int rarity;
   char max_items;
   char* extra_file_name;
   unsigned int extra_file_hash;
-  unsigned short int animation_length;
+  unsigned int audio_volume;
   char* pet_name;
   char* pet_prefix;
   char* pet_suffix;
@@ -35,9 +38,16 @@ struct Item {
   unsigned int overlay_color;
   unsigned int ingredient;
   unsigned int grow_time;
+  unsigned short int val_2;
+  unsigned short int is_rayman;
+  char* extra_options;
+  char* texture_path_2;
+  char* extra_options_2;
+  char* data_pos_80;
+  char* punch_option;
 };
 
-struct Database {
+struct ItemDatabase {
   unsigned short int version;
   unsigned int item_count;
   struct Item* items;
@@ -45,4 +55,6 @@ struct Database {
 
 char* decrypt_string(FILE* file, unsigned int id);
 char* read_string(FILE* file);
-struct Database* parse_from_file(char* filename);
+struct ItemDatabase* parse_from_file(char* filename);
+
+#endif

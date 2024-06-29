@@ -38,13 +38,14 @@ char* read_string(FILE* file) {
   return str;
 }
 
-struct Database* parse_from_file(char* filename) {
-  struct Database* db = malloc(sizeof(struct Database));
+struct ItemDatabase* parse_from_file(char* filename) {
+  struct ItemDatabase* db = malloc(sizeof(struct ItemDatabase));
   FILE* file = fopen(filename, "r");
   if (file == NULL) {
     perror("Error opening file\n");
     return NULL;
   }
+
   fread(&db->version, sizeof(unsigned short int), 1, file);
   fread(&db->item_count, sizeof(unsigned int), 1, file);
 
@@ -57,6 +58,12 @@ struct Database* parse_from_file(char* filename) {
 
   for (unsigned int i = 0; i < db->item_count; i++) {
     fread(&db->items[i].id, sizeof(unsigned int), 1, file);
+    if (i != db->items[i].id) {
+      perror("Item ID mismatch\n");
+      fclose(file);
+      return NULL;
+    }
+
     fread(&db->items[i].flags, sizeof(unsigned short int), 1, file);
     fread(&db->items[i].type, sizeof(char), 1, file);
     fread(&db->items[i].material, sizeof(char), 1, file);
@@ -71,13 +78,13 @@ struct Database* parse_from_file(char* filename) {
     fread(&db->items[i].is_stripey_wallpaper, sizeof(char), 1, file);
     fread(&db->items[i].collision_type, sizeof(char), 1, file);
     fread(&db->items[i].block_health, sizeof(char), 1, file);
-    fread(&db->items[i].reset_time, sizeof(unsigned int), 1, file);
+    fread(&db->items[i].drop_chance, sizeof(unsigned int), 1, file);
     fread(&db->items[i].clothing_type, sizeof(char), 1, file);
     fread(&db->items[i].rarity, sizeof(unsigned short int), 1, file);
     fread(&db->items[i].max_items, sizeof(char), 1, file);
     db->items[i].extra_file_name = read_string(file);
     fread(&db->items[i].extra_file_hash, sizeof(unsigned int), 1, file);
-    fread(&db->items[i].animation_length, sizeof(unsigned short int), 1, file);
+    fread(&db->items[i].audio_volume, sizeof(unsigned int), 1, file);
     db->items[i].pet_name = read_string(file);
     db->items[i].pet_prefix = read_string(file);
     db->items[i].pet_suffix = read_string(file);
@@ -90,23 +97,38 @@ struct Database* parse_from_file(char* filename) {
     fread(&db->items[i].overlay_color, sizeof(unsigned int), 1, file);
     fread(&db->items[i].ingredient, sizeof(unsigned int), 1, file);
     fread(&db->items[i].grow_time, sizeof(unsigned int), 1, file);
-    fseek(file, 0xA, SEEK_CUR);
-    read_string(file);
-    fseek(file, 0x2, SEEK_CUR);
-    read_string(file);
-    fseek(file, 0x4, SEEK_CUR);
-    read_string(file);
+    fread(&db->items[i].val_2, sizeof(unsigned short int), 1, file);
+    fread(&db->items[i].is_rayman, sizeof(unsigned short int), 1, file);
+    db->items[i].extra_options = read_string(file);
+    db->items[i].texture_path_2 = read_string(file);
+    db->items[i].extra_options_2 = read_string(file);
+    fread(&db->items[i].data_pos_80, sizeof(char), 80, file);
 
-    if (i != db->items[i].id) {
-      perror("Item ID mismatch\n");
-      fclose(file);
-      return NULL;
+    if (db->version >= 11) {
+      db->items[i].punch_option = read_string(file);
     }
-    long pos2 = ftell(file);
-
-    fseek(file, 96, SEEK_CUR);
-    long pos = ftell(file);
-    printf("%ld", pos);
+    if (db->version >= 12) {
+      fseek(file, 13, SEEK_CUR);
+    }
+    if (db->version >= 13) {
+      fseek(file, 4, SEEK_CUR);
+    }
+    if (db->version >= 14) {
+      fseek(file, 4, SEEK_CUR);
+    }
+    if (db->version >= 15) {
+      fseek(file, 25, SEEK_CUR);
+      read_string(file);
+    }
+    if (db->version >= 16) {
+      read_string(file);
+    }
+    if (db->version >= 17) {
+      fseek(file, 4, SEEK_CUR);
+    }
+    if (db->version >= 18) {
+      fseek(file, 4, SEEK_CUR);
+    }
   }
   fclose(file);
   return db;
