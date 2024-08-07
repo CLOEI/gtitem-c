@@ -43,7 +43,7 @@ char *read_string(FILE *file)
   return str;
 }
 
-struct ItemDatabase *parse_from_file(char *filename)
+struct ItemDatabase *parse_from_file(const char *filename)
 {
   struct ItemDatabase *db = malloc(sizeof(struct ItemDatabase));
   FILE *file = fopen(filename, "r");
