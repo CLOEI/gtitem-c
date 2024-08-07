@@ -3,18 +3,21 @@
 #include <string.h>
 #include "gtitem.h"
 
-const char* CIPHER = "PBG892FXX982ABC*";
+const char *CIPHER = "PBG892FXX982ABC*";
 
-char* decrypt_string(FILE* file, unsigned int item_id) {
+char *decrypt_string(FILE *file, unsigned int item_id)
+{
   unsigned short int len = 0;
   fread(&len, sizeof(unsigned short int), 1, file);
-  char* str = (char*)malloc(len + 1);
-  if (str == NULL) {
+  char *str = (char *)malloc(len + 1);
+  if (str == NULL)
+  {
     perror("Memory allocation failed\n");
     return NULL;
   }
 
-  for (int i = 0; i < len; i++) {
+  for (int i = 0; i < len; i++)
+  {
     int secret_char_pos = (i + item_id) % strlen(CIPHER);
     char secret_char = CIPHER[secret_char_pos];
     char input_char;
@@ -25,11 +28,13 @@ char* decrypt_string(FILE* file, unsigned int item_id) {
   return str;
 }
 
-char* read_string(FILE* file) {
+char *read_string(FILE *file)
+{
   unsigned short int len = 0;
   fread(&len, sizeof(unsigned short int), 1, file);
-  char* str = (char*)malloc(len + 1);
-  if (str == NULL) {
+  char *str = (char *)malloc(len + 1);
+  if (str == NULL)
+  {
     perror("Memory allocation failed\n");
     return NULL;
   }
@@ -38,27 +43,34 @@ char* read_string(FILE* file) {
   return str;
 }
 
-struct ItemDatabase* parse_from_file(char* filename) {
-  struct ItemDatabase* db = malloc(sizeof(struct ItemDatabase));
-  FILE* file = fopen(filename, "r");
-  if (file == NULL) {
+struct ItemDatabase *parse_from_file(char *filename)
+{
+  struct ItemDatabase *db = malloc(sizeof(struct ItemDatabase));
+  FILE *file = fopen(filename, "r");
+  if (file == NULL)
+  {
     perror("Error opening file\n");
+    free(db);
     return NULL;
   }
 
   fread(&db->version, sizeof(unsigned short int), 1, file);
   fread(&db->item_count, sizeof(unsigned int), 1, file);
 
-  db->items = (struct Item*)malloc(db->item_count * sizeof(struct Item));
-  if (db->items == NULL) {
+  db->items = (struct Item *)malloc(db->item_count * sizeof(struct Item));
+  if (db->items == NULL)
+  {
     perror("Memory allocation failed\n");
     fclose(file);
+    free(db);
     return NULL;
   }
 
-  for (unsigned int i = 0; i < db->item_count; i++) {
+  for (unsigned int i = 0; i < db->item_count; i++)
+  {
     fread(&db->items[i].id, sizeof(unsigned int), 1, file);
-    if (i != db->items[i].id) {
+    if (i != db->items[i].id)
+    {
       perror("Item ID mismatch\n");
       fclose(file);
       return NULL;
@@ -97,36 +109,44 @@ struct ItemDatabase* parse_from_file(char* filename) {
     fread(&db->items[i].overlay_color, sizeof(unsigned int), 1, file);
     fread(&db->items[i].ingredient, sizeof(unsigned int), 1, file);
     fread(&db->items[i].grow_time, sizeof(unsigned int), 1, file);
-    fread(&db->items[i].val_2, sizeof(unsigned short int), 1, file);
+    fseek(file, sizeof(unsigned short int), SEEK_CUR);
     fread(&db->items[i].is_rayman, sizeof(unsigned short int), 1, file);
     db->items[i].extra_options = read_string(file);
     db->items[i].texture_path_2 = read_string(file);
     db->items[i].extra_options_2 = read_string(file);
-    fread(&db->items[i].data_pos_80, sizeof(char), 80, file);
+    fseek(file, 80, SEEK_CUR);
 
-    if (db->version >= 11) {
+    if (db->version >= 11)
+    {
       db->items[i].punch_option = read_string(file);
     }
-    if (db->version >= 12) {
+    if (db->version >= 12)
+    {
       fseek(file, 13, SEEK_CUR);
     }
-    if (db->version >= 13) {
+    if (db->version >= 13)
+    {
       fseek(file, 4, SEEK_CUR);
     }
-    if (db->version >= 14) {
+    if (db->version >= 14)
+    {
       fseek(file, 4, SEEK_CUR);
     }
-    if (db->version >= 15) {
+    if (db->version >= 15)
+    {
       fseek(file, 25, SEEK_CUR);
       read_string(file);
     }
-    if (db->version >= 16) {
+    if (db->version >= 16)
+    {
       read_string(file);
     }
-    if (db->version >= 17) {
+    if (db->version >= 17)
+    {
       fseek(file, 4, SEEK_CUR);
     }
-    if (db->version >= 18) {
+    if (db->version >= 18)
+    {
       fseek(file, 4, SEEK_CUR);
     }
   }
