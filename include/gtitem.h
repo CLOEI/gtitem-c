@@ -55,6 +55,6 @@ struct ItemDatabase
 
 char *decrypt_string(FILE *file, unsigned int id);
 char *read_string(FILE *file);
-struct ItemDatabase *parse_from_file(char *filename);
+struct ItemDatabase *parse_from_file(const char *filename);
 
 #endif
