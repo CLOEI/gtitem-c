@@ -149,6 +149,10 @@ struct ItemDatabase *parse_from_file(const char *filename)
     {
       fseek(file, 4, SEEK_CUR);
     }
+    if (db->version >= 19)
+    {
+      fseek(file, 9, SEEK_CUR);
+    }
   }
   fclose(file);
   return db;
