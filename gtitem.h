@@ -55,8 +55,14 @@ struct ItemDatabase
   struct Item *items;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 char *decrypt_string(FILE *file, unsigned int id);
 char *read_string(FILE *file);
 struct ItemDatabase *parse_from_file(const char *filename);
+#ifdef __cplusplus
+}
+#endif
 
 #endif
