@@ -2,6 +2,7 @@
 #define GTITEM_H
 
 #include <stdio.h>
+#include <stdbool.h>
 
 struct Item
 {
@@ -50,6 +51,7 @@ struct ItemDatabase
 {
   unsigned short int version;
   unsigned int item_count;
+  bool is_loaded;
   struct Item *items;
 };
 

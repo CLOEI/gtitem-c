@@ -155,5 +155,6 @@ struct ItemDatabase *parse_from_file(const char *filename)
     }
   }
   fclose(file);
+  db->is_loaded = true;
   return db;
 }
